@@ -20,7 +20,7 @@ async function getUserAppointments(
 export function useUserAppointments(): Appointment[] {
   const { user } = useUser();
   const { data: userAppointments = [] } = useQuery(
-    'user-appointments',
+    [queryKeys.appointments, queryKeys.user, user?.id],
     () => getUserAppointments(user),
     {
       enabled: !!user
