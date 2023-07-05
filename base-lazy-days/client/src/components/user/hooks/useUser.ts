@@ -10,12 +10,13 @@ import {
 } from '../../../user-storage';
 import { useQuery, useQueryClient } from 'react-query';
 
-async function getUser(user: User | null): Promise<User | null> {
+async function getUser(user: User | null, signal: AbortSignal): Promise<User | null> {
   if (!user) return null;
   const { data }: AxiosResponse<{ user: User }> = await axiosInstance.get(
     `/user/${user.id}`,
     {
       headers: getJWTHeader(user),
+      signal
     },
   );
   return data.user;
@@ -31,7 +32,7 @@ export function useUser(): UseUser {
   const queryClient = useQueryClient();
   const { data: user } = useQuery(
     queryKeys.user, 
-    () => getUser(user),
+    ({ signal }) => getUser(user, signal),
     {
       initialData: getStoredUser,
       onSuccess: (received: User | null) => {
